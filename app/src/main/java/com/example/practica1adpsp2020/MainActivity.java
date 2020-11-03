@@ -266,36 +266,3 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     }
 }
-//Codigo util
-/*else if (sharedPreferences.getBoolean("swpExternal", true)) {
-            activado = sharedPreferences.getBoolean("swpFile", false);
-            if (activado) {
-
-                modo = 'e';
-            } else {
-
-                modo = 'x';
-            }
-
-        } else if (!sharedPreferences.getBoolean("swpFile", true)) {
-            activado = sharedPreferences.getBoolean("swpExternal", false);
-            if (activado) {
-
-                modo = 'x';
-
-            } else {
-
-                modo = 'e';
-            }
-        } else if (!sharedPreferences.getBoolean("swpExternal", true)) {
-            activado = sharedPreferences.getBoolean("swpFile", false);
-            if (activado) {
-
-                modo = 'f';
-
-            } else {
-                modo = 'e';
-                tvLlamada.setText("");
-                tvLlamada.setText(R.string.str_preferencias);
-            }
-        }*/
