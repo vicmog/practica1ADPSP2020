@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">practica1ADPSP2020</string>
+    <string name="str_btTexto">Ver historial de llamadas</string>
+    <string name="bt_verhistorial">Ver historial de llamadas</string>
+    <string name="titulo_permiso">Permisos para mostrar el historial</string>
+    <string name="mensaje_permiso">Necesitamos estos permisos para recoger los datos del historial de llamadas entrantes.
+                                    Sin ellos la aplicación no funcionará.
+                                    Por favor aceptes los permisos.</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="menu_ajustes">Ajustes</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="str_ajustesgetFilesDir">Obtener los datos almacenados en getFilesDir</string>
+    <string name="str_ajustesgetExternalFilesDir">Obtener los datos almacenados en  getExternalFilesDir</string>
+    <string name="sync_datos">Datos</string>
+    <string name="sp_File">switch_preference_File</string>
+    <string name="sp_External">switch_preference_External</string>
+    <string name="str_preferencias">Compruebe que tiene una opcion seleccionada en los ajustes .</string>
+    <string name="str_TituloDatosFileDir">Llamadas almacenadas en getFilesDir()</string>
+    <string name="str_TituloDatosExternalFileDir">Llamadas almacenadas en getExternalFilesDir()</string>
+    <string name="str_Desconocido">Desconocido</string>
+    <string name="swp_File">swpFile</string>
+    <string name="swp_External">swpExternal</string>
+</resources>
