@@ -5,25 +5,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Build;
-import android.os.Bundle;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
-import android.telecom.Call;
-import android.telecom.CallScreeningService;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.CursorLoader;
-import androidx.loader.content.Loader;
-
-import com.example.practica1adpsp2020.MainActivity;
 
 import com.example.practica1adpsp2020.util.LlamadaEntrante;
 import com.example.practica1adpsp2020.util.LlamadaEntranteComparator;
@@ -36,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.prefs.Preferences;
 
 import static com.example.practica1adpsp2020.MainActivity.TAG;
 
@@ -44,7 +28,7 @@ import static com.example.practica1adpsp2020.MainActivity.TAG;
 public class InComingCallsReceiver extends BroadcastReceiver {
 
 
-    private Context ctx ;
+    private Context contexto;
     private String numeroTelefono;
     private String nombreLlamada;
 
@@ -55,7 +39,7 @@ public class InComingCallsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         
-        ctx = context;
+        contexto = context;
 
         String estado = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
 
@@ -70,62 +54,53 @@ public class InComingCallsReceiver extends BroadcastReceiver {
                 int segundo = fecha.get(Calendar.SECOND);
 
 
-           Thread hebraObtieneNumero = new Thread(){
+                numeroTelefono = obtnerNumeroTelefono(contexto.getContentResolver());
+                Log.v(TAG,numeroTelefono+"  receiver");
 
-                @Override
-                public void run() {
-
-                    numeroTelefono = obtnerNumeroTelefono(ctx.getContentResolver());
-
-                }
-
-            };
-            hebraObtieneNumero.start();
-            try {
-
-                hebraObtieneNumero.join();
-            } catch (InterruptedException e) {
-
-            }
-
-
-                    Thread hebraBuscaContacto = new Thread(){
-                    @Override
-                    public void run() {
-                        nombreLlamada = obtenerNombreContacto(ctx.getContentResolver());
-
-                    }
-
-                };
-                hebraBuscaContacto.start();
-                try {
-                    hebraBuscaContacto.join();
-                } catch (InterruptedException e) {
-
-                }
+                lanzaHebraObtnerNombre();
 
                 llamada = new LlamadaEntrante(nombreLlamada,año,mes,dia,hora,minuto,segundo,numeroTelefono);
+                lanzaHebra();
 
-                Thread hebraGuardaLlamada = new Thread(){
-
-                    @Override
-                    public void run() {
-
-                        saveLlamada(llamada);
-                    }
-                };
-
-                hebraGuardaLlamada.start();
-                try {
-                    hebraGuardaLlamada.join();
-                } catch (InterruptedException e) {
-
-                }
 
 
             }
 
 
+    }
+
+    private void lanzaHebraObtnerNombre() {
+        Thread hebraBuscaContacto = new Thread(){
+            @Override
+            public void run() {
+
+                nombreLlamada = obtenerNombreContacto(contexto.getContentResolver());
+            }
+        };
+        hebraBuscaContacto.start();
+        try {
+            hebraBuscaContacto.join();
+        } catch (InterruptedException e) {
+
+        }
+    }
+
+    private void lanzaHebra() {
+        Thread hebraGuardaLlamada = new Thread(){
+
+            @Override
+            public void run() {
+
+                saveLlamada(llamada);
+            }
+        };
+
+        hebraGuardaLlamada.start();
+        try {
+            hebraGuardaLlamada.join();
+        } catch (InterruptedException e) {
+
+        }
     }
 
 
@@ -135,11 +110,13 @@ public class InComingCallsReceiver extends BroadcastReceiver {
             String numero="";
 
             Cursor cur = cr.query(CallLog.Calls.CONTENT_URI, null, null, null, null);
-
+                    while(cur.moveToNext()){
                         if(cur.moveToLast()){
-                         numero = cur.getString(cur.getColumnIndex(CallLog.Calls.NUMBER));
+                            numero = cur.getString(cur.getColumnIndex(CallLog.Calls.NUMBER));
 
                         }
+                    }
+
 
             return numero;
         }
@@ -155,7 +132,7 @@ public class InComingCallsReceiver extends BroadcastReceiver {
         ArrayList<LlamadaEntrante> listaLlamadas=getListLlamadasExternal();
         listaLlamadas.add(llamada);
         Collections.sort(listaLlamadas,new LlamadaEntranteComparator());
-        File f = new File(ctx.getExternalFilesDir(null),"llamadas.csv");
+        File f = new File(contexto.getExternalFilesDir(null),"llamadas.csv");
         FileWriter fw= null;
         try {
             fw = new FileWriter(f);
@@ -175,7 +152,7 @@ public class InComingCallsReceiver extends BroadcastReceiver {
 
     private ArrayList<LlamadaEntrante> getListLlamadasExternal() {
         ArrayList<LlamadaEntrante> listaLlamadas = new ArrayList<>();
-        File f = new File(ctx.getExternalFilesDir(null), "llamadas.csv");
+        File f = new File(contexto.getExternalFilesDir(null), "llamadas.csv");
         BufferedReader br= null;
         try {
             br = new BufferedReader(new FileReader(f));
@@ -199,7 +176,7 @@ public class InComingCallsReceiver extends BroadcastReceiver {
     private void saveLlamadaFileDir(LlamadaEntrante llamada) {
         ArrayList<LlamadaEntrante> listaLlamadas=getListLlamadasFileDir();
         listaLlamadas.add(llamada);
-        File f = new File(ctx.getFilesDir(),"historial.csv");
+        File f = new File(contexto.getFilesDir(),"historial.csv");
         FileWriter fw= null;
         try {
             fw = new FileWriter(f);
@@ -220,7 +197,7 @@ public class InComingCallsReceiver extends BroadcastReceiver {
 
     private ArrayList<LlamadaEntrante> getListLlamadasFileDir() {
         ArrayList<LlamadaEntrante> listaLlamadas = new ArrayList<>();
-        File f = new File(ctx.getFilesDir(), "historial.csv");
+        File f = new File(contexto.getFilesDir(), "historial.csv");
         BufferedReader br= null;
         try {
             br = new BufferedReader(new FileReader(f));
