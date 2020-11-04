@@ -218,6 +218,7 @@ public class InComingCallsReceiver extends BroadcastReceiver {
         return listaLlamadas;
     }
 
+
     private String obtenerNombreContacto(ContentResolver cr) {
         String nombre ="Desconocido";
 

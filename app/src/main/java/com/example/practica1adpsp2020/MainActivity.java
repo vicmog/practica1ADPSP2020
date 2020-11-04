@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 pedirPermiso();
                 if(permiso){
                     readLlamadas();
-                   Log.v(TAG,obtnerNumeroTelefono(getContentResolver())+"  main");
+
 
 
                 }
@@ -175,22 +175,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         builder.show();
 
     }
-    public  String obtnerNumeroTelefono(ContentResolver cr){
-
-
-        String numero="";
-
-        Cursor cur = cr.query(CallLog.Calls.CONTENT_URI, null, null, null, null);
-
-        while(cur.moveToNext()){
-            if(cur.moveToLast()){
-                numero = cur.getString(cur.getColumnIndex(CallLog.Calls.NUMBER));
-
-            }
-        }
-
-        return numero;
-    }
+   
 
     private void obtenerPreferenciasActuales() {
         boolean activado = true;
