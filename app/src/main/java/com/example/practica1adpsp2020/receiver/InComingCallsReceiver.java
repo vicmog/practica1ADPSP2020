@@ -22,14 +22,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
-import static com.example.practica1adpsp2020.MainActivity.TAG;
-
 
 public class InComingCallsReceiver extends BroadcastReceiver {
 
 
     private Context contexto;
-    private String numeroTelefono;
+    private static String numeroTelefono;
     private String nombreLlamada;
     private LlamadaEntrante llamada;
 
@@ -37,13 +35,26 @@ public class InComingCallsReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        
+
         contexto = context;
 
         String estado = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+        if (estado.equals(TelephonyManager.EXTRA_STATE_RINGING)){
 
-        if(estado.equals(TelephonyManager.EXTRA_STATE_IDLE)){
+            numeroTelefono = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
+
+        }else if(estado.equals(TelephonyManager.EXTRA_STATE_IDLE)){
+
+            lanzaHebraObtenerGuardarDatos();
+
+        }
+    }
+
+    private void lanzaHebraObtenerGuardarDatos() {
+        Thread hebraBuscaContacto = new Thread(){
+            @Override
+            public void run() {
                 Calendar fecha = Calendar.getInstance();
                 int año = fecha.get(Calendar.YEAR);
                 int mes = fecha.get(Calendar.MONTH) + 1;
@@ -53,58 +64,17 @@ public class InComingCallsReceiver extends BroadcastReceiver {
                 int segundo = fecha.get(Calendar.SECOND);
 
 
-                numeroTelefono = obtnerNumeroTelefono(contexto.getContentResolver());
-
-
-                lanzaHebraObtnerNombre();
+                nombreLlamada = obtenerNombreContacto(contexto.getContentResolver());
 
                 llamada = new LlamadaEntrante(nombreLlamada,año,mes,dia,hora,minuto,segundo,numeroTelefono);
-                lanzaHebraGuardaLlamada();
-        }
-    }
+                saveLlamada(llamada);
 
-    private void lanzaHebraObtnerNombre() {
-        Thread hebraBuscaContacto = new Thread(){
-            @Override
-            public void run() { //cambiarlo
 
-                nombreLlamada = obtenerNombreContacto(contexto.getContentResolver());
             }
         };
         hebraBuscaContacto.start();
 
     }
-
-    private void lanzaHebraGuardaLlamada() {
-        Thread hebraGuardaLlamada = new Thread(){
-
-            @Override
-            public void run() {
-
-                saveLlamada(llamada);
-            }
-        };
-
-        hebraGuardaLlamada.start();
-
-    }
-
-
-    public  String obtnerNumeroTelefono(ContentResolver cr){
-        String numero="";
-
-            Cursor cur = cr.query(CallLog.Calls.CONTENT_URI, null, null, null, null);
-                    while(cur.moveToNext()){
-                        if(cur.moveToLast()){
-                            numero = cur.getString(cur.getColumnIndex(CallLog.Calls.NUMBER));
-
-                        }
-                    }
-            return numero;
-        }
-
-
-
     private void saveLlamada(LlamadaEntrante llamada) {
         saveLlamadaFileDir(llamada);
         saveLlamadaExternalFilesDir(llamada);
