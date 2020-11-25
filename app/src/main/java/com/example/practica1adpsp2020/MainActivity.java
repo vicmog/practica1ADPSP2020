@@ -175,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         builder.show();
 
     }
-   
 
     private void obtenerPreferenciasActuales() {
         boolean activado = true;

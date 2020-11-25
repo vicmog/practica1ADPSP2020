@@ -31,7 +31,6 @@ public class InComingCallsReceiver extends BroadcastReceiver {
     private Context contexto;
     private String numeroTelefono;
     private String nombreLlamada;
-
     private LlamadaEntrante llamada;
 
 
@@ -55,37 +54,28 @@ public class InComingCallsReceiver extends BroadcastReceiver {
 
 
                 numeroTelefono = obtnerNumeroTelefono(contexto.getContentResolver());
-                Log.v(TAG,numeroTelefono+"  receiver");
+
 
                 lanzaHebraObtnerNombre();
 
                 llamada = new LlamadaEntrante(nombreLlamada,año,mes,dia,hora,minuto,segundo,numeroTelefono);
-                lanzaHebra();
-
-
-
-            }
-
-
+                lanzaHebraGuardaLlamada();
+        }
     }
 
     private void lanzaHebraObtnerNombre() {
         Thread hebraBuscaContacto = new Thread(){
             @Override
-            public void run() {
+            public void run() { //cambiarlo
 
                 nombreLlamada = obtenerNombreContacto(contexto.getContentResolver());
             }
         };
         hebraBuscaContacto.start();
-        try {
-            hebraBuscaContacto.join();
-        } catch (InterruptedException e) {
 
-        }
     }
 
-    private void lanzaHebra() {
+    private void lanzaHebraGuardaLlamada() {
         Thread hebraGuardaLlamada = new Thread(){
 
             @Override
@@ -96,18 +86,12 @@ public class InComingCallsReceiver extends BroadcastReceiver {
         };
 
         hebraGuardaLlamada.start();
-        try {
-            hebraGuardaLlamada.join();
-        } catch (InterruptedException e) {
 
-        }
     }
 
 
     public  String obtnerNumeroTelefono(ContentResolver cr){
-
-
-            String numero="";
+        String numero="";
 
             Cursor cur = cr.query(CallLog.Calls.CONTENT_URI, null, null, null, null);
                     while(cur.moveToNext()){
@@ -116,8 +100,6 @@ public class InComingCallsReceiver extends BroadcastReceiver {
 
                         }
                     }
-
-
             return numero;
         }
 
@@ -140,7 +122,6 @@ public class InComingCallsReceiver extends BroadcastReceiver {
                 fw.write(llamadaNueva.toCsv2()+"\n");
 
             }
-
             fw.flush();
             fw.close();
 
@@ -221,21 +202,16 @@ public class InComingCallsReceiver extends BroadcastReceiver {
 
     private String obtenerNombreContacto(ContentResolver cr) {
         String nombre ="Desconocido";
-
-
-            Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
 
             if (cur.getCount() > 0) {
                 while (cur.moveToNext()) {
                     String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
                     String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-
                     if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-
                         Cursor cur2 = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?", new String[]{id}, null);
 
                         while (cur2.moveToNext()) {
-
                             String phoneNumber = cur2.getString(cur2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                             String numero ="";
 
@@ -243,14 +219,10 @@ public class InComingCallsReceiver extends BroadcastReceiver {
                                 if(Character.isDigit(phoneNumber.charAt(i))){
                                     numero = numero + phoneNumber.charAt(i);
                                 }
-
                             }
-
                             if(numero.equals(numeroTelefono)){
                                 nombre=name;
-
                             }
-
                         }
                         cur2.close();
                     }
